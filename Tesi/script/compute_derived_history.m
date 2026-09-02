@@ -17,6 +17,7 @@ R.A_eff = zeros(n,1);
 R.g_load_earth = zeros(n,1);
 R.q_conv = zeros(n,1);
 R.q_rad = zeros(n,1);
+R.q_dyn = zeros(n,1);
 R.phase = strings(n,1);
 
 for i = 1:n
@@ -67,5 +68,6 @@ for i = 1:n
     R.g_load_earth(i) = sqrt(D^2 + L^2) / (P.vehicle.m * 9.81);
     R.q_conv(i) = q_conv;
     R.q_rad(i) = q_rad;
+    R.q_dyn(i) = q_dyn;
 end
 end

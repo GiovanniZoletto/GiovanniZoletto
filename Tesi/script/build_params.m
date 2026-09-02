@@ -152,7 +152,7 @@ P.heat.A_heat = 0.70 * P.vehicle.S_ref; % [m^2] estimate: heated forebody area f
 % LIMITS
 % -------------------------
 P.limits.T_inner_max = 30 + 273.15;        % [K] 303.15 K (30 degC) max cabin-side interior temperature
-P.limits.T_inner_abort = 40 + 273.15;      % [K] 313.15 K (40 degC) emergency stop threshold
+P.limits.T_inner_abort = 50 + 273.15;      % [K] 313.15 K (40 degC) emergency stop threshold
 
 % -------------------------
 % AREA CONTROL

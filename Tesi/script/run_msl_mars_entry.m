@@ -1,4 +1,4 @@
-clear; clc; close all;
+clearvars; clc; close all;
 
 % MSL-like Mars entry model with:
 % - aerodynamic coefficients tabulated as functions of Mach and alpha
@@ -12,8 +12,27 @@ clear; clc; close all;
 %   - estimate: engineering estimate used because a public mission value
 %               is not readily available
 
-P = build_params(); % build the central struct of physical, numerical and control parameters
-enable_animation = true;
+% -------------------------------------------------------------------------
+% CONFIGURAZIONE VEICOLO / MISSIONE
+% Opzioni disponibili:
+%   'msl'        -> MSL / Mars 2020 Curiosity/Perseverance (2.8 t, D = 4.5 m)
+%   'red_dragon' -> SpaceX Red Dragon Concept (9.7 t, D = 3.7 m)
+%   'hiad_human' -> NASA Human Mars Lander (15.0 t, D = 10.0 m)
+% -------------------------------------------------------------------------
+if ~exist('vehicle_choice', 'var') || isempty(vehicle_choice)
+    vehicle_choice = 'hiad_human';
+end
+
+switch lower(vehicle_choice)
+    case 'red_dragon'
+        P = build_params_red_dragon();
+    case 'hiad_human'
+        P = build_params_hiad_human();
+    otherwise
+        P = build_params();
+end
+
+enable_animation = false;
 atm0 = mars_atmosphere(P.init.h0, P);
 alpha0 = alpha_schedule(P.init.v0 / atm0.a, P); % initial alpha reference from initial Mach
 
@@ -38,8 +57,8 @@ x0 = [ ...
 % or until another terminal condition is met.
 % -------------------------
 opts_entry_a = odeset( ...
-    'RelTol', 1e-7, ...
-    'AbsTol', 1e-8, ...
+    'RelTol', 1e-6, ...
+    'AbsTol', 1e-7, ...
     'Events', @(t,x) event_entry_phase_a(t, x, P));
 
 [t1a, x1a, te1a, xe1a, ie1a] = ode45(@(t,x) dynamics_entry(t, x, P), ...
@@ -60,8 +79,8 @@ entered_chute_window = ~isempty(ie1a) && ie1a(end) == 1;
 
 if entered_chute_window
     opts_entry_b = odeset( ...
-        'RelTol', 1e-7, ...
-        'AbsTol', 1e-8, ...
+        'RelTol', 1e-6, ...
+        'AbsTol', 1e-7, ...
         'Events', @(t,x) event_entry_phase_b(t, x, P));
 
     [t1b, x1b, te1b, xe1b, ie1b] = ode45(@(t,x) dynamics_entry(t, x, P), ...
@@ -86,8 +105,8 @@ phase_info.t_subchute = NaN;          % default if the subsonic chute never depl
 
 if ~isempty(ie) && ie(end) == 1
     opts_chute_1 = odeset( ...
-        'RelTol', 1e-7, ...
-        'AbsTol', 1e-8, ...
+        'RelTol', 1e-6, ...
+        'AbsTol', 1e-7, ...
         'Events', @(t,x) event_chute_stage1(t, x, P));
 
     [t2a, x2a, te2a, xe2a, ie2a] = ode45(@(t,x) dynamics_chute_stage(t, x, P, 1), ...
@@ -99,8 +118,8 @@ if ~isempty(ie) && ie(end) == 1
 
     if ~isempty(ie2a) && ie2a(end) == 1
         opts_chute_2 = odeset( ...
-            'RelTol', 1e-7, ...
-            'AbsTol', 1e-8, ...
+            'RelTol', 1e-6, ...
+            'AbsTol', 1e-7, ...
             'Events', @(t,x) event_chute_stage2(t, x, P));
 
         [t2b, x2b, te2b, ~, ie2b] = ode45(@(t,x) dynamics_chute_stage(t, x, P, 2), ...
@@ -193,8 +212,12 @@ subplot(5,3,14)
 plot(t, x(:,9), 'LineWidth', 1.5)
 xlabel('Time [s]'); ylabel('CdA_{chute} [m^2]'); grid on
 
-sg = sgtitle('MSL-like Mars Entry with Aerodynamic Tables and Level-2 Thermal Model');
-set(sg, 'Color', 'k')
+subplot(5,3,15)
+plot(t, R.q_dyn, 'LineWidth', 1.5, 'Color', [0.49 0.18 0.56])
+xlabel('Time [s]'); ylabel('q_{dyn} [Pa]'); grid on
+
+sg = sgtitle(sprintf('%s - Traiettoria, Carichi Aerotermici e Termica TPS', P.vehicle.name));
+set(sg, 'Color', 'k', 'FontWeight', 'bold')
 
 ax = findall(gcf, 'Type', 'axes');
 set(ax, ...
