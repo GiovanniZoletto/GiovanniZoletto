@@ -213,8 +213,8 @@ plot(t, x(:,9), 'LineWidth', 1.5)
 xlabel('Time [s]'); ylabel('CdA_{chute} [m^2]'); grid on
 
 subplot(5,3,15)
-plot(t, R.q_dyn, 'LineWidth', 1.5, 'Color', [0.49 0.18 0.56])
-xlabel('Time [s]'); ylabel('q_{dyn} [Pa]'); grid on
+plot(t, R.q_dyn, 'LineWidth', 1.5, )
+xlabel('Time [s]'); ylabel('P_{dyn} [Pa]'); grid on
 
 sg = sgtitle(sprintf('%s - Traiettoria, Carichi Aerotermici e Termica TPS', P.vehicle.name));
 set(sg, 'Color', 'k', 'FontWeight', 'bold')
