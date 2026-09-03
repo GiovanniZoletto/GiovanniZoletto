@@ -1,7 +1,7 @@
-function dxdt = dynamics_entry(~, x, P)
+function dxdt = dynamics_entry(t, x, P)
 % Entry-phase 3DOF translational dynamics with prescribed alpha(M)
 % and thermal / area-control model.
-%
+
 % State vector:
 % x = [v; gamma; h; s; T_tps; T_inner; thickness_tps; alpha; CdA_chute; A_eff]
 
@@ -19,6 +19,14 @@ atm = mars_atmosphere(h, P);
 g = mars_gravity(h, P);
 M = v / atm.a;
 
+% ---- Mass transition (CBM jettison) ----
+% Mars 2020 data: altitude ~11.74 km, Mach ~2.07
+if (P.vehicle.m == P.vehicle.m_initial) && (h <= 11740) && (M <= 2.07)
+    P.vehicle.m = P.vehicle.m_postCBM;
+    fprintf('Mass change: %.0f kg -> %.0f kg at t=%.2f s, h=%.0f m, Mach=%.2f\n', ...
+        P.vehicle.m_initial, P.vehicle.m_postCBM, t, h, M);
+end
+
 alpha_cmd_deg = alpha_schedule(M, P); % commanded alpha from the guidance schedule
 [Cd, Cl] = aero_database(M, alpha_deg, P);
 
@@ -35,17 +43,17 @@ sigma_rad = deg2rad(bank_angle_deg);
 L_vert = L_3D * cos(sigma_rad);
 
 % Point-mass entry dynamics on a spherical planet.
-dvdt = -D / P.vehicle.m - g * sin(gamma);
-dgammadt = L_vert / (P.vehicle.m * v) - (g / v - v / (P.mars.R + h)) * cos(gamma);
-dhdt = v * sin(gamma);
-dsdt = v * cos(gamma) * P.mars.R / (P.mars.R + h);
+ dvdt = -D / P.vehicle.m - g * sin(gamma);
+ dgammadt = L_vert / (P.vehicle.m * v) - (g / v - v / (P.mars.R + h)) * cos(gamma);
+ dhdt = v * sin(gamma);
+ dsdt = v * cos(gamma) * P.mars.R / (P.mars.R + h);
 
 [dT_tpsdt, dT_innerdt, dthicknessdt, q_conv] = thermal_rates(v, atm.rho, T_tps, T_inner, thickness_tps, P);
 g_load = sqrt(D^2 + L_3D^2) / (P.vehicle.m * 9.81);
 A_cmd = area_controller(A_eff, g_load, T_tps, T_inner, q_conv, P); % commanded effective area
-dalpha_dt = (alpha_cmd_deg - alpha_deg) / P.alpha_sched.tau_alpha;
-dCdA_dt = 0;
-dA_dt = (A_cmd - A_eff) / P.ctrl.tau_A;
+ dalpha_dt = (alpha_cmd_deg - alpha_deg) / P.alpha_sched.tau_alpha;
+ dCdA_dt = 0;
+ dA_dt = (A_cmd - A_eff) / P.ctrl.tau_A;
 
 dxdt = [dvdt; dgammadt; dhdt; dsdt; dT_tpsdt; dT_innerdt; dthicknessdt; dalpha_dt; dCdA_dt; dA_dt];
 end

@@ -256,6 +256,14 @@ else
     t_chute = NaN;
 end
 
+    % Mass change summary
+    if isfield(P.vehicle, 'm_initial') && isfield(P.vehicle, 'm_postCBM')
+        if P.vehicle.m == P.vehicle.m_postCBM
+            fprintf('Massa dopo jettison CBM: %.0f kg (evento avvenuto)\n', P.vehicle.m);
+        else
+            fprintf('Massa finale (senza jettison): %.0f kg\n', P.vehicle.m);
+        end
+    end
 fprintf('\n==================================================\n');
 fprintf('       CRONOLOGIA E TEMPI DI FINE FASI EDL        \n');
 fprintf('==================================================\n');
