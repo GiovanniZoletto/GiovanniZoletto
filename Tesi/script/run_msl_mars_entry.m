@@ -142,6 +142,20 @@ end
 % -------------------------
 R = compute_derived_history(t, x, P, phase_info); % reconstruct diagnostic outputs for plotting
 
+% Peak temperature tracking
+[T_tps_peak, idx_tps_peak] = max(x(:,5));
+t_tps_peak = t(idx_tps_peak);
+h_tps_peak = x(idx_tps_peak, 3);
+v_tps_peak = x(idx_tps_peak, 1);
+
+[T_inner_peak, idx_inner_peak] = max(x(:,6));
+t_inner_peak = t(idx_inner_peak);
+h_inner_peak = x(idx_inner_peak, 3);
+v_inner_peak = x(idx_inner_peak, 1);
+
+thickness_consumed = P.init.thickness_tps0 - x(end,7);
+[g_peak, idx_g_peak] = max(R.g_load_earth);
+
 % -------------------------
 % PLOTS
 % -------------------------
@@ -247,23 +261,21 @@ end
 % -------------------------
 % TERMINAL SUMMARY
 % -------------------------
-thickness_consumed = P.init.thickness_tps0 - x(end,7);
-[g_peak, idx_g_peak] = max(R.g_load_earth);
-
 if ~isnan(phase_info.t_supchute)
     t_chute = phase_info.t_supchute;
 else
     t_chute = NaN;
 end
 
-    % Mass change summary
-    if isfield(P.vehicle, 'm_initial') && isfield(P.vehicle, 'm_postCBM')
-        if P.vehicle.m == P.vehicle.m_postCBM
-            fprintf('Massa dopo jettison CBM: %.0f kg (evento avvenuto)\n', P.vehicle.m);
-        else
-            fprintf('Massa finale (senza jettison): %.0f kg\n', P.vehicle.m);
-        end
+% Mass change summary
+if isfield(P.vehicle, 'm_initial') && isfield(P.vehicle, 'm_postCBM')
+    if P.vehicle.m == P.vehicle.m_postCBM
+        fprintf('Massa dopo jettison CBM: %.0f kg (evento avvenuto)\n', P.vehicle.m);
+    else
+        fprintf('Massa finale (senza jettison): %.0f kg\n', P.vehicle.m);
     end
+end
+
 fprintf('\n==================================================\n');
 fprintf('       CRONOLOGIA E TEMPI DI FINE FASI EDL        \n');
 fprintf('==================================================\n');
@@ -284,14 +296,28 @@ fprintf('  Fine Simulazione (Quota Stop %.0f m): t = %6.2f s  (v = %5.1f m/s)\n'
     P.edl.h_stop, t(end), x(end,1));
 fprintf('==================================================\n');
 
-fprintf('\nCondizioni Terminali:\n');
+fprintf('\n==================================================\n');
+fprintf('       PICCHI TERMICI                                  \n');
+fprintf('==================================================\n');
+fprintf('  T_tps esterna max   : %.2f K (%.2f °C)\n', T_tps_peak, T_tps_peak - 273.15);
+fprintf('    @ t = %.2f s, h = %.0f m, v = %.1f m/s\n', t_tps_peak, h_tps_peak, v_tps_peak);
+fprintf('  T_inner parete max  : %.2f K (%.2f °C)\n', T_inner_peak, T_inner_peak - 273.15);
+fprintf('    @ t = %.2f s, h = %.0f m, v = %.1f m/s\n', t_inner_peak, h_inner_peak, v_inner_peak);
+fprintf('  Picco g-load        : %.2f g @ t = %.2f s, h = %.0f m\n', ...
+    g_peak, t(idx_g_peak), x(idx_g_peak,3));
+fprintf('==================================================\n');
+
+fprintf('\n==================================================\n');
+fprintf('       CONDIZIONI TERMINALI                           \n');
+fprintf('==================================================\n');
 fprintf('  Tempo totale   : %.2f s\n', t(end));
 fprintf('  Velocita       : %.2f m/s\n', x(end,1));
 fprintf('  Quota          : %.2f m\n', x(end,3));
-fprintf('  Inner wall T   : %.2f K (%.2f °C)\n', x(end,6), x(end,6) - 273.15);
+fprintf('  T_inner wall   : %.2f K (%.2f °C)\n', x(end,6), x(end,6) - 273.15);
+fprintf('  T_tps esterna  : %.2f K (%.2f °C)\n', x(end,5), x(end,5) - 273.15);
 fprintf('  TPS rimanente  : %.4f mm\n', x(end,7)*1000);
 fprintf('  TPS consumato  : %.4f mm\n', thickness_consumed*1000);
-fprintf('  Picco g-load   : %.2f g at t = %.2f s\n', g_peak, t(idx_g_peak));
+fprintf('==================================================\n');
 
 if enable_animation
     animate_entry_attitude(t, x, R);
