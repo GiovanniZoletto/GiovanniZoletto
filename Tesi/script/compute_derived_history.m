@@ -11,6 +11,7 @@ R.Cd = zeros(n,1);
 R.Cl = zeros(n,1);
 R.rho = zeros(n,1);
 R.L = zeros(n,1);
+R.L_vert = zeros(n,1);
 R.D = zeros(n,1);
 R.CdA_chute = zeros(n,1);
 R.A_eff = zeros(n,1);
@@ -62,6 +63,11 @@ for i = 1:n
     R.Cd(i) = Cd;
     R.Cl(i) = Cl;
     R.L(i) = L;
+    bank_angle_deg = 65.0;
+    if isfield(P.aero, 'bank_angle_deg')
+        bank_angle_deg = P.aero.bank_angle_deg;
+    end
+    R.L_vert(i) = L * cos(deg2rad(bank_angle_deg));
     R.D(i) = D;
     R.CdA_chute(i) = CdA_chute;
     R.A_eff(i) = A_eff;

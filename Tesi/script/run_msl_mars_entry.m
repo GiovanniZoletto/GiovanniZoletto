@@ -20,7 +20,7 @@ clearvars; clc; close all;
 %   'hiad_human' -> NASA Human Mars Lander (15.0 t, D = 10.0 m)
 % -------------------------------------------------------------------------
 if ~exist('vehicle_choice', 'var') || isempty(vehicle_choice)
-    vehicle_choice = 'hiad_human';
+    vehicle_choice = 'msl';
 end
 
 switch lower(vehicle_choice)
@@ -213,7 +213,7 @@ plot(t, x(:,9), 'LineWidth', 1.5)
 xlabel('Time [s]'); ylabel('CdA_{chute} [m^2]'); grid on
 
 subplot(5,3,15)
-plot(t, R.q_dyn, 'LineWidth', 1.5, )
+plot(t, R.q_dyn, 'LineWidth', 1.5 )
 xlabel('Time [s]'); ylabel('P_{dyn} [Pa]'); grid on
 
 sg = sgtitle(sprintf('%s - Traiettoria, Carichi Aerotermici e Termica TPS', P.vehicle.name));

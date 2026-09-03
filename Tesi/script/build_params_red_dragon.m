@@ -1,4 +1,4 @@
-﻿function P = build_params_red_dragon()
+function P = build_params_red_dragon()
 % Centralized parameter file for the SpaceX Red Dragon Mars entry concept.
 %
 % Reference:
@@ -18,6 +18,8 @@ P.vehicle.S_ref_nom = P.vehicle.S_ref;
 P.vehicle.R_n = 1.50;                          % [m] Dragon spherical nose radius
 P.vehicle.m = 9700;                             % [kg] Entry interface mass (Dragon + 2500kg propellant)
 P.vehicle.LD_target_hyp = 0.26;                 % [-] Hypersonic L/D for Dragon at trim alpha ~ -18 deg
+P.aero.trim_alpha_deg = -18.0;                  % [deg] Dragon trim angle
+P.alpha_sched.alpha_nodes_deg = [0 0 0 -18 -18 -18 -18 -18 -18];
 
 % Initial conditions
 P.init.A_eff0 = P.vehicle.S_ref_nom;
