@@ -189,45 +189,45 @@ plot(t, R.g_load_earth, 'LineWidth', 1.5)
 yline(P.ctrl.g_target, '--', 'g_{target}')
 xlabel('Time [s]'); ylabel('g-load [Earth g]'); grid on
 
-subplot(3,5,7)
+subplot(5,3,7)
 plot(t, R.q_conv/1e6, 'LineWidth', 1.5)
 xlabel('Time [s]'); ylabel('q_{conv} [MW/m^2]'); grid on
 
-subplot(3,5,8)
+subplot(5,3,8)
 plot(t, x(:,5), 'LineWidth', 1.5); hold on
 plot(t, x(:,6), 'LineWidth', 1.5)
 yline(P.limits.T_inner_max, '--', 'T_{inner,max}')
 xlabel('Time [s]'); ylabel('Temperature [K]'); grid on
 legend('TPS lump', 'Inner wall', 'Location', 'best')
 
-subplot(3,5,9)
+subplot(5,3,9)
 plot(t, x(:,7)*1000, 'LineWidth', 1.5)
 xlabel('Time [s]'); ylabel('TPS thickness [mm]'); grid on
 
-subplot(3,5,10)
+subplot(5,3,10)
 plot(t, R.L/1000, 'LineWidth', 1.5)
 xlabel('Time [s]'); ylabel('Lift [kN]'); grid on
 
-subplot(3,5,11)
+subplot(5,3,11)
 plot(t, R.rho, 'LineWidth', 1.5)
 xlabel('Time [s]'); ylabel('\rho [kg/m^3]'); grid on
 
-subplot(3,5,12)
+subplot(5,3,12)
 plot(t, R.D/1000, 'LineWidth', 1.5)
 xlabel('Time [s]'); ylabel('Drag [kN]'); grid on
 
-subplot(3,5,13)
+subplot(5,3,13)
 plot(t, x(:,10), 'LineWidth', 1.5); hold on
 yline(P.vehicle.S_ref_nom, '--', 'A_{nom}')
 yline(P.ctrl.A_min, ':', 'A_{min}')
 yline(P.ctrl.A_max, ':', 'A_{max}')
 xlabel('Time [s]'); ylabel('A_{eff} [m^2]'); grid on
 
-subplot(3,5,14)
+subplot(5,3,14)
 plot(t, x(:,9), 'LineWidth', 1.5)
 xlabel('Time [s]'); ylabel('CdA_{chute} [m^2]'); grid on
 
-subplot(3,5,15)
+subplot(5,3,15)
 plot(t, R.q_dyn, 'LineWidth', 1.5 )
 xlabel('Time [s]'); ylabel('P_{dyn} [Pa]'); grid on
 
