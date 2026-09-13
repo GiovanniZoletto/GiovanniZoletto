@@ -314,7 +314,19 @@ fprintf('  %-35s | %7.1f | %9.0f | %7.1f | %6.2f | %6.1f | a_max = %.2f g\n', ..
     'Picco di Decelerazione', t(idx_g_peak), x(idx_g_peak,3), x(idx_g_peak,1), ...
     M_g, x(idx_g_peak,8), g_peak);
 
-% 4) CBM jettison
+% 4) Picco temperatura esterna TPS
+M_tps = R.Mach(idx_tps_peak);
+fprintf('  %-35s | %7.1f | %9.0f | %7.1f | %6.2f | %6.1f | T_tps = %.0f K (%.0f C)\n', ...
+    'Picco Temp. Esterna TPS', t_tps_peak, h_tps_peak, v_tps_peak, ...
+    M_tps, x(idx_tps_peak,8), T_tps_peak, T_tps_peak - 273.15);
+
+% 5) Picco temperatura interna parete
+M_in = R.Mach(idx_inner_peak);
+fprintf('  %-35s | %7.1f | %9.0f | %7.1f | %6.2f | %6.1f | T_inner = %.0f K (%.1f C)\n', ...
+    'Picco Temp. Interna Parete', t_inner_peak, h_inner_peak, v_inner_peak, ...
+    M_in, x(idx_inner_peak,8), T_inner_peak, T_inner_peak - 273.15);
+
+% 6) CBM jettison
 if ~isnan(idx_cbm)
     M_cbm = R.Mach(idx_cbm);
     fprintf('  %-35s | %7.1f | %9.0f | %7.1f | %6.2f | %6.1f | m: %.0f -> %.0f kg\n', ...
